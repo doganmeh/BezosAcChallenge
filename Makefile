@@ -1,9 +1,5 @@
-PYTHON_VER=python3.12
-AWS_ACCNT_ID=897722699304
-BUCKET_NAME=mehmet-bezos-challenge
-REGION=us-east-1
-LAMBDA_NAME=MehmetBezosChallenge
-ROLE_NAME=MehmetLambdaS3WriteRole
+include .env
+export $(shell sed 's/=.*//' .env)
 
 install:
 	pip3 install -r dev_requirements.txt
