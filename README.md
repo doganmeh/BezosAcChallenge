@@ -10,3 +10,18 @@ pip3 install make
 ```
 make install
 ```
+
+### Configure AWS Credentials:
+```
+make config
+```
+
+### Create infrastructure on AWS:
+```
+make infra
+```
+
+### Destroy infrastructure on AWS:
+```
+make destroy
+```
