@@ -6,17 +6,17 @@ pip3 install --upgrade pip
 pip3 install make
 ```
 
-### Install:
-```
-make install
-```
-
 ### Configure AWS Credentials:
 ```
 make config
 ```
 
-### Create infrastructure on AWS:
+### Local Install:
+```
+make install
+```
+
+### Create infrastructure on AWS and deploy code:
 ```
 make infra
 ```
@@ -26,7 +26,7 @@ make infra
 make deploy
 ```
 
-### Run lambda function (prepare data):
+### Run lambda function (to prepare data):
 ```
 make run
 ```
