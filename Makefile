@@ -8,8 +8,9 @@ ROLE_NAME=MehmetLambdaS3WriteRole
 install:
 	pip3 install -r dev_requirements.txt
 	pip3 install -r prod_requirements.txt
-	mkdir -p build
+	rm -rf build && mkdir -p build
 	pip3 install -r prod_requirements.txt --target ./build
+	cp src/* build/
 	cd build && zip -r ../build.zip .
 
 config:
