@@ -15,6 +15,21 @@ install:
 config:
 	aws configure
 
+build:
+	cp src/* build/
+	cd build && zip -ur ../build.zip .
+
+deploy: build
+	aws lambda update-function-code \
+		--function-name $(LAMBDA_NAME) \
+		--zip-file fileb://build.zip
+
+run:
+	rm -f output.txt
+	aws lambda invoke \
+		--function-name $(LAMBDA_NAME) \
+		output.txt
+
 role:
 	aws iam create-role \
 		--role-name $(ROLE_NAME) \

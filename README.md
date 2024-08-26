@@ -21,6 +21,16 @@ make config
 make infra
 ```
 
+### Deploy code to AWS (only after code update):
+```
+make deploy
+```
+
+### Run lambda function (prepare data):
+```
+make run
+```
+
 ### Destroy infrastructure on AWS:
 ```
 make destroy
