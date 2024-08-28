@@ -47,7 +47,10 @@ data-2022:
 		--payload '{"YEAR": "2022"}' \
 		output-2022.txt
 
-data: extract-2020 extract-2021 extract-2022
+data: data-2020 data-2021 data-2022
+
+see-files:
+	aws s3 ls s3://$(BUCKET_NAME)/ --recursive
 
 role:
 	aws iam create-role \
@@ -73,6 +76,10 @@ role:
 		--role-name $(ROLE_NAME) \
 		--policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
+	aws iam attach-role-policy \
+		--role-name $(ROLE_NAME) \
+		--policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+
 lambda:
 	aws lambda create-function \
 		--function-name $(LAMBDA_NAME) \
@@ -89,7 +96,43 @@ s3-bucket:
 		--bucket $(BUCKET_NAME) \
 		--region $(REGION)
 
-infra: role lambda s3-bucket
+athena-database:
+	aws athena start-query-execution \
+		--query-string "CREATE DATABASE $(ATHENA_DB);" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+
+athena-table:
+	aws athena start-query-execution \
+		--query-string "CREATE EXTERNAL TABLE IF NOT EXISTS $(ATHENA_DB).ccd_enrollment_grade_pk ( \
+			year INT, \
+			ncessch STRING, \
+			ncessch_num BIGINT, \
+			grade INT, \
+			race INT, \
+			sex INT, \
+			enrollment INT, \
+			fips INT, \
+			leaid STRING \
+		) ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe' \
+		WITH SERDEPROPERTIES ( \
+			'serialization.format' = '1' \
+		) LOCATION 's3://$(BUCKET_NAME)/2_transformed/' \
+		TBLPROPERTIES ('has_encrypted_data'='false');" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+
+query:
+	aws athena start-query-execution \
+		--query-string " \
+				SELECT fips,  \
+					   SUM(enrollment) as total_enrollment  \
+				FROM $(ATHENA_DB).ccd_enrollment_grade_pk  \
+				WHERE year=2020 AND grade=-1  \
+				GROUP BY fips  \
+				ORDER BY total_enrollment DESC \
+				LIMIT 10;" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+
+infra: role lambda s3-bucket athena-database athena-table
 
 clean:
 	rm -Rf package
@@ -112,11 +155,23 @@ delete-role:
 	aws iam delete-role \
 		--role-name $(ROLE_NAME)
 
-delete-s3-bucket:
-	aws s3 rm s3://$(BUCKET_NAME) --recursive
+delete-files:
+	aws s3 rm s3://$(BUCKET_NAME)/ --recursive
+
+delete-s3-bucket: delete-files
 	aws s3api delete-bucket \
 		--bucket $(BUCKET_NAME) \
 		--region $(REGION)
 
-destroy: clean delete-lambda delete-role delete-s3-bucket
+delete-athena-database:
+	aws athena start-query-execution \
+		--query-string "DROP DATABASE $(ATHENA_DB);" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+
+delete-athena-table:
+	aws athena start-query-execution \
+		--query-string "DROP TABLE $(ATHENA_DB).ccd_enrollment_grade_pk;" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+
+destroy: clean delete-lambda delete-role delete-athena-table delete-athena-database delete-s3-bucket
 

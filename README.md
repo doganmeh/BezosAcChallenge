@@ -20,9 +20,19 @@ make install
 make infra
 ```
 
-### Run lambda function (to prepare data):
+### Run lambda function (to extract & transform data):
 ```
 make data
+```
+
+### See files (extracted & transformed data in s3):
+```
+make see-files
+```
+
+### Run query (to process data):
+```
+make query
 ```
 
 ### Destroy infrastructure on AWS:
