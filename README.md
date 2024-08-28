@@ -7,9 +7,14 @@ source venv/bin/activate
 pip3 install make
 ```
 
-### 2. Configure AWS Credentials:
+### 2.a. Configure AWS Credentials:
 ```
 make config
+```
+
+### 2.b. Export your AWS Account ID:
+```
+export AWS_ACCNT_ID=????
 ```
 
 ### 3. Local Install:
