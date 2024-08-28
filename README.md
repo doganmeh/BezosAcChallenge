@@ -30,9 +30,9 @@ make data
 make see-files
 ```
 
-### Run query (to process data):
+### Run query (to get enrollment summary):
 ```
-make query
+make query-enrollment
 ```
 
 ### Destroy infrastructure on AWS:
@@ -44,3 +44,10 @@ make destroy
 ```
 make deploy
 ```
+
+### Run query to validate record counts by year (a basic validation):
+```
+make query-counts
+```
+-----
+

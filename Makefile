@@ -52,6 +52,9 @@ data: data-2020 data-2021 data-2022
 see-files:
 	aws s3 ls s3://$(BUCKET_NAME)/ --recursive
 
+download-files:
+	aws s3 cp s3://$(BUCKET_NAME)/ . --recursive
+
 role:
 	aws iam create-role \
 		--role-name $(ROLE_NAME) \
@@ -120,17 +123,30 @@ athena-table:
 		TBLPROPERTIES ('has_encrypted_data'='false');" \
 		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
 
-query:
+query-enrollment:
 	aws athena start-query-execution \
 		--query-string " \
 				SELECT fips,  \
 					   SUM(enrollment) as total_enrollment  \
 				FROM $(ATHENA_DB).ccd_enrollment_grade_pk  \
-				WHERE year=2020 AND grade=-1  \
+				WHERE year=2021 AND grade=-1  \
 				GROUP BY fips  \
 				ORDER BY total_enrollment DESC \
 				LIMIT 10;" \
-		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/"
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/enrollment/"
+	aws s3 cp s3://$(BUCKET_NAME)/result/enrollment/ . --recursive
+
+query-counts:
+	aws athena start-query-execution \
+		--query-string " \
+				SELECT count(*) as record_count,  \
+					   year  \
+				FROM $(ATHENA_DB).ccd_enrollment_grade_pk  \
+				GROUP BY year  \
+				ORDER BY year DESC \
+				;" \
+		--result-configuration "OutputLocation=s3://$(BUCKET_NAME)/result/count/"
+	aws s3 cp s3://$(BUCKET_NAME)/result/count/ . --recursive
 
 infra: role lambda s3-bucket athena-database athena-table
 
