@@ -3,5 +3,5 @@ venv
 build
 
 build.zip
-output.txt
+output*.txt
 

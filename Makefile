@@ -1,6 +1,8 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
+.PHONY: build
+
 install:
 	pip3 install -r dev_requirements.txt
 	pip3 install -r prod_requirements.txt
@@ -21,11 +23,31 @@ deploy: build
 		--function-name $(LAMBDA_NAME) \
 		--zip-file fileb://build.zip
 
-run:
-	rm -f output.txt
+data-2020:
+	rm -f output-2020.txt
 	aws lambda invoke \
 		--function-name $(LAMBDA_NAME) \
-		output.txt
+		--cli-binary-format raw-in-base64-out \
+		--payload '{"YEAR": "2020"}' \
+		output-2020.txt
+
+data-2021:
+	rm -f output-2021.txt
+	aws lambda invoke \
+		--function-name $(LAMBDA_NAME) \
+		--cli-binary-format raw-in-base64-out \
+		--payload '{"YEAR": "2021"}' \
+		output-2021.txt
+
+data-2022:
+	rm -f output-2022.txt
+	aws lambda invoke \
+		--function-name $(LAMBDA_NAME) \
+		--cli-binary-format raw-in-base64-out \
+		--payload '{"YEAR": "2022"}' \
+		output-2022.txt
+
+data: extract-2020 extract-2021 extract-2022
 
 role:
 	aws iam create-role \
@@ -58,8 +80,9 @@ lambda:
 		--role arn:aws:iam::$(AWS_ACCNT_ID):role/$(ROLE_NAME) \
 		--handler main.lambda_handler \
 		--zip-file fileb://build.zip \
-		--timeout 15 \
-		--memory-size 128
+		--timeout 60 \
+		--memory-size 128 \
+		--environment "Variables={BUCKET_NAME=$(BUCKET_NAME)}"
 
 s3-bucket:
 	aws s3api create-bucket \
