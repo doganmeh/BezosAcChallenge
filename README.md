@@ -79,7 +79,10 @@ AWS Lambda, S3, Athena, Make
 Depending on the importance of this data to the business I would consider:
 - Put transformation logic in a separate Lambda function to isolate processes and to be able to run them separately when needed
 - Make it repeatable: let it clean-up and pick up from where left off the second time it is run
-- More data validation
+- Better governance: document schema, etc. 
+- More data validation:
+  - check against schema (things evolve)
+  - cross check similar data
 - IaC: such as CDK or TerraForm
 - More testing:
   - Add unit tests (mock data/components, or live)
@@ -90,9 +93,8 @@ Depending on the importance of this data to the business I would consider:
   - track lambda metrics such as execution time, memory
   - track record counts year over year to detect anomalies
   - alert dev team if things fail e.g., PagerDuty
-- Better governance: document schema, etc. 
-- Better modeling or treating data as a product. 
-- If data and the queries will grow, parquet may be better than json.
+- Modeling data; treating data as a product. 
+- If data and the number/frequency of queries grow, parquet may be better than json.
 ___
 # Misc Useful Stuff
 ### Deploy code to AWS (only after code update):

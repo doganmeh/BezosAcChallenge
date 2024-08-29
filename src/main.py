@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     # get vars from the environment
-    year = event.get('YEAR', None)
+    year = event.get('YEAR', None)  # TODO: calculate using system time if not provided
     bucket_name = os.getenv('BUCKET_NAME', None)
     count = event.get('count', 0)  # page count; also to prevent from infinite recursive call
     api_url = event.get('API_URL', None)  # if the URL is in the env, this is a recursive call
