@@ -70,6 +70,21 @@ Please see #7 above. The code is in the `Makefile`. Here is the result:
 | 40   |           37,733 |
 | 51   |           30,979 |
 
+**_Note: I uploaded the raw data to ChatGPT and asked to generate the enrollment numbers. It produced the very table above (see below). This gives me somewhat relief showing my calculation was correct: _** 
+
+- Texas (FIPS: 48) - 245,135
+- Illinois (FIPS: 17) - 71,078
+- Florida (FIPS: 12) - 58,900
+- New York (FIPS: 36) - 56,452
+- Wisconsin (FIPS: 55) - 51,159
+- Georgia (FIPS: 13) - 46,841
+- New Jersey (FIPS: 34) - 43,884
+- Ohio (FIPS: 39) - 39,632
+- Oklahoma (FIPS: 40) - 37,733
+- Virginia (FIPS: 51) - 30,979
+
+I also asked ChatGPT the same question **_without_** uploading data. It created a list aggregating data from 5 different websites. That list roughly correlated to the one I got from the urban.org data. One interesting difference I noticed is that, it also put California (FIPS 6) on top of that list, which is totally missing in mine. Further research is needed. 
+
 ### List all tools and technologies you used:
 
 AWS Lambda, S3, Athena, Make
@@ -83,6 +98,7 @@ AWS Lambda, S3, Athena, Make
 ### What else would you do if you had more time:
 Depending on the importance of this data to the business I would consider:
 - Put transformation logic in a separate Lambda function to isolate processes and to be able to run them separately when needed
+- Calculate `year` using system date-time, if not provided (useful for scheduling the job).
 - Make it repeatable: let it clean-up and pick up from where left off the second time it is run
 - Better governance: document schema, etc. 
 - More data validation:
