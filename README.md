@@ -17,6 +17,11 @@ make config
 export AWS_ACCNT_ID=????
 ```
 
+### 2.c. Install AWS CLI:
+```
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+```
+
 ### 3. Local Install:
 ```
 make install
