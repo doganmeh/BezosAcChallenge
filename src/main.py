@@ -5,12 +5,12 @@ import os
 import urllib.request
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
-# Set up logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 
 def lambda_handler(event, context):
+    # Set up logging
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
     # get vars from the environment
     year = event.get('YEAR', None)  # TODO: calculate using system time if not provided
     bucket_name = os.getenv('BUCKET_NAME', None)

@@ -22,9 +22,14 @@ export AWS_ACCNT_ID=????
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 ```
 
-### 3. Local Install:
+### 3.a. Local Install:
 ```
 make install
+```
+
+### 3.b. Run unit tests:
+```
+make test
 ```
 
 ### 4. Create infrastructure on AWS and deploy code:
@@ -106,7 +111,7 @@ Depending on the importance of this data to the business I would consider:
   - cross check similar data
 - IaC: such as CDK or TerraForm
 - More testing:
-  - Add unit tests (mock data/components, or live)
+  - Add more unit tests, check coverage.
   - IaC allows to test pipelines in non-prod environments end-to-end.
 - Containerization.
 - Better resilience: regional fail-overs (or warm/active stand-by).

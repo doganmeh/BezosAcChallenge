@@ -1,7 +1,7 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-.PHONY: build
+.PHONY: build test
 
 install:
 	pip3 install -r dev_requirements.txt
@@ -10,6 +10,9 @@ install:
 	pip3 install -r prod_requirements.txt --target ./build
 	cp src/* build/
 	cd build && zip -r ../build.zip .
+
+test:
+	pytest
 
 config:
 	aws configure
