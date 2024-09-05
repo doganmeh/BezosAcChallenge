@@ -102,6 +102,7 @@ AWS Lambda, S3, Athena, Make
 
 ### What else would you do if you had more time:
 Depending on the importance of this data to the business I would consider:
+- Containerization.
 - Put transformation logic in a separate Lambda function to isolate processes and to be able to run them separately when needed
 - Calculate `year` using system date-time, if not provided (useful for scheduling the job).
 - Make it repeatable: let it clean-up and pick up from where left off the second time it is run
@@ -113,7 +114,6 @@ Depending on the importance of this data to the business I would consider:
 - More testing:
   - Add more unit tests, check coverage.
   - IaC allows to test pipelines in non-prod environments end-to-end.
-- Containerization.
 - Better resilience: regional fail-overs (or warm/active stand-by).
 - Better monitoring: 
   - track lambda metrics such as execution time, memory

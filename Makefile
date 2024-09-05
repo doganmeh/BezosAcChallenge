@@ -8,7 +8,7 @@ install:
 	pip3 install -r prod_requirements.txt
 	rm -rf build && mkdir -p build
 	pip3 install -r prod_requirements.txt --target ./build
-	cp src/* build/
+	cp -R src/* build/
 	cd build && zip -r ../build.zip .
 
 test:
@@ -18,7 +18,7 @@ config:
 	aws configure
 
 build:
-	cp src/* build/
+	cp -R src/* build/
 	cd build && zip -ur ../build.zip .
 
 deploy: build
@@ -27,28 +27,28 @@ deploy: build
 		--zip-file fileb://build.zip
 
 data-2020:
-	rm -f output-2020.txt
+	rm -f output/job-status-2020.txt
 	aws lambda invoke \
 		--function-name $(LAMBDA_NAME) \
 		--cli-binary-format raw-in-base64-out \
-		--payload '{"YEAR": "2020"}' \
-		output-2020.txt
+		--payload '{"YEAR": "2020", "PAGE_COUNT": 1}' \
+		output/job-status-2020.txt
 
 data-2021:
-	rm -f output-2021.txt
+	rm -f output/job-status-2021.txt
 	aws lambda invoke \
 		--function-name $(LAMBDA_NAME) \
 		--cli-binary-format raw-in-base64-out \
-		--payload '{"YEAR": "2021"}' \
-		output-2021.txt
+		--payload '{"YEAR": "2021", "PAGE_COUNT": 1}' \
+		output/job-status-2021.txt
 
 data-2022:
-	rm -f output-2022.txt
+	rm -f output/job-status-2022.txt
 	aws lambda invoke \
 		--function-name $(LAMBDA_NAME) \
 		--cli-binary-format raw-in-base64-out \
-		--payload '{"YEAR": "2022"}' \
-		output-2022.txt
+		--payload '{"YEAR": "2022", "PAGE_COUNT": 1}' \
+		output/job-status-2022.txt
 
 data: data-2020 data-2021 data-2022
 
@@ -56,7 +56,7 @@ see-files:
 	aws s3 ls s3://$(BUCKET_NAME)/ --recursive
 
 download-files:
-	aws s3 cp s3://$(BUCKET_NAME)/ . --recursive
+	aws s3 cp s3://$(BUCKET_NAME)/ output/ --recursive
 
 role:
 	aws iam create-role \
@@ -95,7 +95,7 @@ lambda:
 		--zip-file fileb://build.zip \
 		--timeout 60 \
 		--memory-size 128 \
-		--environment "Variables={BUCKET_NAME=$(BUCKET_NAME)}"
+		--environment "Variables={BUCKET_NAME=$(BUCKET_NAME), MAX_PAGE_COUNT=$(MAX_PAGE_COUNT)}"
 
 s3-bucket:
 	aws s3api create-bucket \

@@ -12,20 +12,21 @@ def lambda_handler(event, context):
     logger.setLevel(logging.INFO)
 
     # get vars from the environment
-    year = event.get('YEAR', None)  # TODO: calculate using system time if not provided
-    bucket_name = os.getenv('BUCKET_NAME', None)
-    count = event.get('count', 0)  # page count; also to prevent from infinite recursive call
-    api_url = event.get('API_URL', None)  # if the URL is in the env, this is a recursive call
+    year = event.get('YEAR')  # TODO: calculate using system time if not provided
+    bucket_name = os.getenv('BUCKET_NAME')
+    max_page_count = os.getenv('MAX_PAGE_COUNT')
+    page_count = event.get('PAGE_COUNT')  # also to prevent from infinite recursive call
+    api_url = event.get('API_URL')  # if the URL is in the env, this is a recursive call
 
     if api_url is None:  # i.e., initial call
         api_url = f"https://educationdata.urban.org/api/v1/schools/ccd/enrollment/{year}/grade-pk/"
-    file_name = f"ccd-enrollment-prek-{year}-page-{count}.json"
+    file_name = f"ccd-enrollment-prek-{year}-page-{page_count}.json"
 
     # log everything for debugging
     logger.info(f"""Variables:
                      - year: {year}
                      - bucket_name: {bucket_name}
-                     - Page count: {count}
+                     - page_count: {page_count}
                      - api_url: {api_url}
                      - file_name: {file_name}
     """)
@@ -60,10 +61,24 @@ def lambda_handler(event, context):
             # get "next" page's URL
             next_url = data_dict.get("next")
 
+            # make sure max_page_count is an integer
+            try:
+                max_page_count = int(max_page_count)
+            except TypeError as e:
+                logger.error(f"Expecting a positive integer max_page_count, but got: {max_page_count}")
+                raise e
+
+            # make sure page_count is an integer
+            try:
+                page_count = int(page_count)
+            except TypeError as e:
+                logger.error(f"Expecting a positive integer page_count, but got: {page_count}")
+                raise e
+
             # recursively call self to bring "next" pages
-            if count <= 10 and next_url and next_url != api_url:
+            if page_count < max_page_count and next_url and next_url != api_url:
                 new_payload = {
-                    "count": count + 1,
+                    "PAGE_COUNT": page_count + 1,
                     "API_URL": next_url,
                     "YEAR": year,
                 }
