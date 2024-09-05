@@ -52,7 +52,7 @@ class TestLambdaHandler(unittest.TestCase):
             .replace("[", "")
             .replace("]", ""),
             Bucket='test-bucket',
-            Key='2_transformed/ccd-enrollment-prek-2021-page-1.json'
+            Key='2_transformed/ccd-enrollment-prek-2021-page-001.json'
         )
         # self.assertEqual(result['statusCode'], 200)  # TOFIX
         # self.assertIn('Data successfully saved to S3', result['body'])  # TOFIX

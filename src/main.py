@@ -20,7 +20,7 @@ def lambda_handler(event, context):
 
     if api_url is None:  # i.e., initial call
         api_url = f"https://educationdata.urban.org/api/v1/schools/ccd/enrollment/{year}/grade-pk/"
-    file_name = f"ccd-enrollment-prek-{year}-page-{page_count}.json"
+    file_name = f"ccd-enrollment-prek-{year}-page-{page_count:03}.json"
 
     # log everything for debugging
     logger.info(f"""Variables:
